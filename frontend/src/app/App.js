@@ -1,0 +1,142 @@
+import React, { Component } from "react";
+
+import "./App.css";
+import { Route, withRouter, Switch } from "react-router-dom";
+
+import { getCurrentUser } from "../util/APIUtils";
+import { ACCESS_TOKEN } from "../constants";
+import Dashboard from "../dashboard/Dashboard";
+import Login from "../user/login/Login";
+import Signup from "../user/signup/Signup";
+import AppHeader from "../common/AppHeader";
+import NotFound from "../common/NotFound";
+import LoadingIndicator from "../common/LoadingIndicator";
+import PrivateRoute from "../common/PrivateRoute";
+import { Layout, notification } from "antd";
+const { Content,Footer } = Layout;
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentUser: null,
+      isAuthenticated: false,
+      isLoading: false,
+    };
+    this.handleLogout = this.handleLogout.bind(this);
+    this.loadCurrentUser = this.loadCurrentUser.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+
+    notification.config({
+      placement: "topRight",
+      top: 70,
+      duration: 3,
+    });
+    this.closeMenu = this.closeMenu.bind(this);
+    this.openMenu = this.openMenu.bind(this);
+  }
+
+  openMenu = () => {
+    document.querySelector('.sidebar').classList.add('open');
+  };
+  closeMenu = () => {
+    document.querySelector('.sidebar').classList.remove('open');
+  };
+
+  loadCurrentUser() {
+    this.setState({
+      isLoading: true,
+    });
+    getCurrentUser()
+      .then((response) => {
+        this.setState({
+          currentUser: response,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          isLoading: false,
+        });
+      });
+  }
+
+  componentDidMount() {
+    this.loadCurrentUser();
+  }
+
+  handleLogout(
+    redirectTo = "/",
+    notificationType = "success",
+    description = "You're successfully logged out."
+  ) {
+    localStorage.removeItem(ACCESS_TOKEN);
+
+    this.setState({
+      currentUser: null,
+      isAuthenticated: false,
+    });
+    notification[notificationType]({
+      message: "Dashboard App",
+      description: description,
+    });
+    this.props.history.push("/login");
+  }
+
+  handleLogin() {
+    notification.success({
+      message: "Dashboard App",
+      description: "You're successfully logged in.",
+    });
+    this.loadCurrentUser();
+    this.props.history.push("/dashboard");
+  }
+
+  render() {
+    if (this.state.isLoading) {
+      return <LoadingIndicator />;
+    }
+    return (
+      <Layout className="app-container">
+        <AppHeader
+          isAuthenticated={this.state.isAuthenticated}
+          currentUser={this.state.currentUser}
+          onLogout={this.handleLogout}
+        />
+       
+        <Content className="app-content">
+          
+            <Switch>
+              <PrivateRoute
+                exact={true}
+                authenticated={this.state.isAuthenticated}
+                path="/"
+                component={Dashboard}
+                handleLogout={this.handleLogout}
+              ></PrivateRoute>
+              <Route
+                path="/login"
+                render={(props) => (
+                  <Login onLogin={this.handleLogin} {...props} />
+                )}
+              ></Route>
+              <Route path="/signup" component={Signup}></Route>
+              <PrivateRoute
+                authenticated={this.state.isAuthenticated}
+                path="/dashboard"
+                component={Dashboard}
+                handleLogout={this.handleLogout}
+              ></PrivateRoute>
+              <Route component={NotFound}></Route>
+            </Switch>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>©2020 Created by Tony Dang</Footer>
+      </Layout>
+
+
+    );
+  }
+}
+
+export default withRouter(App);

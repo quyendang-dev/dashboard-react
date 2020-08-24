@@ -1,0 +1,13 @@
+.ant-layout-header {
+  line-height: 32px;
+  height: auto;
+  background-color: #203040;
+}
+
+.logout-button {
+  border: none;
+  float: "left";
+  padding-left: 0; 
+  color: white;
+  font-size: 14px;
+}
