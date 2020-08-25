@@ -1,10 +1,17 @@
-import { API_BASE_URL, ACCESS_TOKEN } from "../constants";
+import { ACCESS_TOKEN } from "../constants";
 
 const request = (options) => {
   const headers = new Headers({
     "Content-Type": "application/json",
   });
 
+  const anotherOptions = {
+      mode: 'cors',
+      cache: "no-cache",
+      credentials: "same-origin",
+      redirect: "follow",
+      referrerPolicy: "no-referrer"
+  }
   if (localStorage.getItem(ACCESS_TOKEN)) {
     headers.append(
       "Authorization",
@@ -13,7 +20,7 @@ const request = (options) => {
   }
 
   const defaults = { headers: headers };
-  options = Object.assign({}, defaults, options);
+  options = Object.assign(anotherOptions, defaults, options);
 
   return fetch(options.url, options).then((response) =>
     response.json().then((json) => {
@@ -27,7 +34,7 @@ const request = (options) => {
 
 export function login(loginRequest) {
   return request({
-    url: API_BASE_URL + "/auth/signin",
+    url:  "/auth/signin",
     method: "POST",
     body: JSON.stringify(loginRequest),
   });
@@ -35,7 +42,7 @@ export function login(loginRequest) {
 
 export function signup(signupRequest) {
   return request({
-    url: API_BASE_URL + "/auth/signup",
+    url:  "/auth/signup",
     method: "POST",
     body: JSON.stringify(signupRequest),
   });
@@ -43,14 +50,14 @@ export function signup(signupRequest) {
 
 export function checkUsernameAvailability(username) {
   return request({
-    url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,
+    url:  "/user/checkUsernameAvailability?username=" + username,
     method: "GET",
   });
 }
 
 export function checkEmailAvailability(email) {
   return request({
-    url: API_BASE_URL + "/user/checkEmailAvailability?email=" + email,
+    url:  "/user/checkEmailAvailability?email=" + email,
     method: "GET",
   });
 }
@@ -61,7 +68,7 @@ export function getCurrentUser() {
   }
 
   return request({
-    url: API_BASE_URL + "/user/me",
+    url:  "/user/me",
     method: "GET",
   });
 }
@@ -69,7 +76,7 @@ export function getCurrentUser() {
 export function getProductByConditions(code, name, description, status, type) {
   let path = `code=${code}&name=${name}&description=${description}&status=${status}&type=${type}`;
   return request({
-    url: API_BASE_URL + "/products?" + path,
+    url:  "/products?" + path,
     method: "GET",
   });
 }
