@@ -43,6 +43,7 @@ public class DashboardApplication {
     @Bean
     CommandLineRunner runner() {
         return args -> {
+            roleRepository.deleteAll();
             roleRepository.save(new Role(RoleName.ROLE_USER));
             roleRepository.save(new Role(RoleName.ROLE_ADMIN));
 
