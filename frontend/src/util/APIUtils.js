@@ -21,7 +21,7 @@ const request = (options) => {
 
   const defaults = { headers: headers };
   options = Object.assign(anotherOptions, defaults, options);
-  const url = '/api/' + options.url;
+  const url = '/api' + options.url;
   return fetch(url, options).then((response) =>
     response.json().then((json) => {
       if (!response.ok) {
