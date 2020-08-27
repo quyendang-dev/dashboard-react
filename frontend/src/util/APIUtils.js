@@ -6,11 +6,10 @@ const request = (options) => {
   });
 
   const anotherOptions = {
-      mode: 'cors',
-      cache: "no-cache",
-      credentials: "same-origin",
-      redirect: "follow",
-      referrerPolicy: "no-referrer"
+      // cache: "no-cache",
+      // credentials: "same-origin",
+      // redirect: "follow",
+      // referrerPolicy: "no-referrer"
   }
   if (localStorage.getItem(ACCESS_TOKEN)) {
     headers.append(
@@ -22,6 +21,7 @@ const request = (options) => {
   const defaults = { headers: headers };
   options = Object.assign(anotherOptions, defaults, options);
   const url = '/api/' + options.url;
+  console.log(url);
   return fetch(url, options).then((response) =>
     response.json().then((json) => {
       if (!response.ok) {
