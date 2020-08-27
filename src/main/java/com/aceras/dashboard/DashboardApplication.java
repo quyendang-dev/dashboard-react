@@ -1,7 +1,10 @@
 package com.aceras.dashboard;
 
 import com.aceras.dashboard.model.Product;
+import com.aceras.dashboard.model.Role;
+import com.aceras.dashboard.model.RoleName;
 import com.aceras.dashboard.repository.ProductRepository;
+import com.aceras.dashboard.repository.RoleRepository;
 import com.aceras.dashboard.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +28,9 @@ public class DashboardApplication {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
 	@PostConstruct
 	void init() {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -37,6 +43,9 @@ public class DashboardApplication {
     @Bean
     CommandLineRunner runner() {
         return args -> {
+            roleRepository.save(new Role(RoleName.ROLE_USER));
+            roleRepository.save(new Role(RoleName.ROLE_ADMIN));
+
 //            Save demo data after start (only run first time)
             productRepository.deleteAll();
             productRepository.save(new Product("IP1","Iphone 1","Iphone generation 1st",AppConstants.PRODUCT_STATUS_AVAILABLE, AppConstants.PRODUCT_TYPE_OLD_FASHION));
